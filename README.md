@@ -52,6 +52,7 @@ AirlinesMl/
 
 ## Instalación
 
+### Opción 1: Instalación Local
 1. Clona el repositorio
 2. Instala las dependencias:
    ```bash
@@ -62,49 +63,116 @@ AirlinesMl/
    pip install -e .
    ```
 
+### Opción 2: Docker (Recomendado)
+1. Clona el repositorio
+2. Asegúrate de tener Docker y Docker Compose instalados
+3. Construye y ejecuta con Docker Compose:
+   ```bash
+   docker-compose up --build
+   ```
+
 ## Uso
 
-### Ejecutar el pipeline completo
+### Con Docker Compose (Recomendado)
+
+#### Ejecutar pipeline completo
+```bash
+docker-compose up airlines-ml
+```
+
+#### Ejecutar procesamiento de datos únicamente
+```bash
+docker-compose up data-processing
+```
+
+#### Ejecutar entrenamiento ML únicamente
+```bash
+docker-compose up ml-training
+```
+
+#### Visualizar pipeline interactivo con Kedro Viz
+```bash
+docker-compose up kedro-viz
+# Disponible en: http://localhost:4141
+```
+
+**Kedro Viz** proporciona una interfaz web interactiva donde puedes:
+-  Explorar el grafo de pipelines en tiempo real
+-  Ver métricas y resultados de ejecución
+-  Monitorear el estado de cada nodo
+-  Analizar el linaje de datos (data lineage)
+-  Ejecutar pipelines específicos desde la interfaz
+
+#### Desarrollo con Jupyter Lab
+```bash
+docker-compose up jupyter
+# Disponible en: http://localhost:8888
+```
+
+### Uso Local (Sin Docker)
+
+#### Ejecutar el pipeline completo
 ```bash
 kedro run
 ```
 
-### Ejecutar pipelines específicos
+#### Ejecutar pipelines específicos
 ```bash
 kedro run --pipeline data_processing
 kedro run --pipeline data_science
 ```
 
-### Visualizar el pipeline
+#### Visualizar el pipeline
 ```bash
 kedro viz
 ```
 
-### Lanzar Jupyter notebooks
+#### Lanzar Jupyter notebooks
 ```bash
 kedro jupyter notebook
 ```
 
-## Pipeline de Procesamiento de Datos
+## Arquitectura de Pipelines
+
+### Pipeline de Procesamiento de Datos
+
+![Pipeline de Procesamiento](public/kedro-pipeline-proseccing.svg)
 
 El pipeline de procesamiento de datos incluye:
 
-1. **Limpieza de Datos**: Manejar valores faltantes y remover duplicados
-2. **Preprocesamiento de Datos**: Convertir variables categóricas e ingeniería básica de características
-3. **División de Datos**: Dividir datos en conjuntos de entrenamiento (64%), validación (16%) y prueba (20%)
+1. **airlines_raw** → **preprocess_airlines_data_node**: Limpieza y preprocesamiento inicial
+   - Manejar valores faltantes y remover duplicados
+   - Convertir variables categóricas (airline, flight, source_city, etc.)
+   - Ingeniería básica de características
 
-## Pipeline de Machine Learning
+2. **airlines_processed** → **split_data_node**: División estratégica de datos
+   - Conjunto de entrenamiento: 64% (192,097 muestras)
+   - Conjunto de validación: 16% (48,025 muestras)  
+   - Conjunto de prueba: 20% (60,031 muestras)
 
-El pipeline de ciencia de datos implementa múltiples algoritmos:
+### Pipeline de Machine Learning
 
-- Regresión Lineal (modelo base)
-- Random Forest Regressor
-- XGBoost
-- LightGBM
+![Pipeline de Ciencia de Datos](public/kedro-pipeline-science.svg)
 
-Los modelos son evaluados usando:
+El pipeline de ciencia de datos implementa un flujo completo de ML:
+
+#### Preparación de Características
+- **prepare_features_node**: Codificación de variables categóricas y escalado numérico
+- **feature_encoders**: Almacenamiento de transformadores para inference
+
+#### Entrenamiento de Modelos Paralelo
+- **train_linear_regression_node**: Regresión Lineal (modelo base)
+- **train_random_forest_node**: Random Forest Regressor  
+- **train_xgboost_node**: XGBoost con validación cruzada
+- **train_lightgbm_node**: LightGBM con early stopping
+
+#### Evaluación y Comparación
+- **evaluate_*_node**: Evaluación individual de cada modelo
+- **compare_models_node**: Comparación final y ranking
+
+**Métricas de Evaluación:**
 - Error Cuadrático Medio (RMSE)
-- Error Absoluto Medio (MAE)
+- Error Absoluto Medio (MAE)  
 - R-cuadrado (R²)
 
 ## Resultados del Modelo
