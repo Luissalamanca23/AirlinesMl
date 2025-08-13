@@ -1,0 +1,81 @@
+# Data Catalog for Airlines ML project
+
+# Raw data
+airlines_raw:
+  type: pandas.CSVDataset
+  filepath: data/01_raw/airlines_flights_data.csv
+
+# Processed data
+airlines_processed:
+  type: pandas.CSVDataset
+  filepath: data/02_intermediate/airlines_processed.csv
+
+# Split datasets
+airlines_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/airlines_train.csv
+
+airlines_val:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/airlines_val.csv
+
+airlines_test:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/airlines_test.csv
+
+# Feature-engineered datasets
+features_train:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/features_train.csv
+
+features_val:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/features_val.csv
+
+features_test:
+  type: pandas.CSVDataset
+  filepath: data/05_model_input/features_test.csv
+
+# Feature encoders
+feature_encoders:
+  type: pickle.PickleDataset
+  filepath: data/06_models/feature_encoders.pkl
+
+# Trained models
+linear_regression_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/linear_regression_model.pkl
+
+random_forest_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/random_forest_model.pkl
+
+xgboost_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/xgboost_model.pkl
+
+lightgbm_model:
+  type: pickle.PickleDataset
+  filepath: data/06_models/lightgbm_model.pkl
+
+# Model metrics
+lr_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/lr_metrics.json
+
+rf_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/rf_metrics.json
+
+xgb_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/xgb_metrics.json
+
+lgb_metrics:
+  type: json.JSONDataset
+  filepath: data/08_reporting/lgb_metrics.json
+
+# Model comparison
+model_comparison:
+  type: pandas.CSVDataset
+  filepath: data/08_reporting/model_comparison.csv
